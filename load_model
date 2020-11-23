@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Sep 10 18:16:07 2020
+
+@author: krajna4ever
+"""
+from keras.datasets import mnist
+from os import environ
+from keras.models import load_model
+from numpy import random
+import matplotlib.pyplot as plt
+from keras.utils import to_categorical
+
+
+environ['TF_CPP_MIN_LOG_LEVEL']='3'
+
+my_model=load_model(filepath=r'\home\krajna4ever\Desktop\model_save.h5')
+print(my_model.summary(), '\n')
+
+
+
+#showing weights bisases and paramenters
+
+print("last mode biases:")
+print(my_model.get_weights()[-1])
+
+
+print("last mode weights:")
+print(my_model.get_weights()[-2])
+
+
+#loading mnist dataset 
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+
+rand_n= random.randint(0,10000)
+rand_i=test_images[rand_n]
+plt.imshow(rand_i, cmap='Greys')
+plt.show()
+
+
+# Predicting a random number image 
+
+pred=my_model.predict(rand_i.reshape(1,28,28,1), batch_size=1)
+print('The random image number prediction is: {} ' .format(pred))
+
+#Evaluation test over test dataset never seen set
+test_images=test_images.reshape((10000,28,28,1))
+test_labels = to_categorical(test_labels)
+(eval_l, eval_acc)=my_model.evaluate(x=test_images, y=test_labels, batch_size=10000)
+print('Evaluation Accuracy is: {:4.2f}%' .format(eval_acc*100))
